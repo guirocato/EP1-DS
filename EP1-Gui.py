@@ -33,15 +33,15 @@ while True:
                 escolha2=int(input('Deseja adicionar, remover ou mudar itens do cardápio?\n1 - Adicionar\n2 - Remover\n3 - Mudar\nSua escolha: '))
                 if escolha2 == 1:
                     adicionaritem=input('Digite o item: ')
-                    adicionarpreço=int(input('Digite o preço do produto: '))
+                    adicionarpreço=float(input('Digite o preço do produto: '))
                     print("O produto foi adicionado assim como o preço!")
-                    for chave in cardápio:
-                            print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
+                    #for chave in cardápio:
+                            #print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
                     if adicionarpreço<0:
                         print('Por favor, insira um preço válido')
                     cardápio[adicionaritem]=adicionarpreço
                     for chave in cardápio:
-                            print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
+                        print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
                 if escolha2 == 2:
                     removeritem=input('Digite o item a ser removido: ')
                     if removeritem not in cardápio:
@@ -52,22 +52,26 @@ while True:
                 if escolha2 ==3 :
                     nomedoprodutoasermudado=input('Digite o nome do produto a ter o preço mudado:')
                     if nomedoprodutoasermudado in cardápio:
-                        novopreço=int(input('Digite o preço novo: '))
+                        novopreço=float(input('Digite o preço novo: '))
                         cardápio[nomedoprodutoasermudado]=novopreço
                         for chave in cardápio:
                             print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
                     else:
                         print("Por favor, insira um produto do cardápio")
-    if a==2:                #add item
+    if a==2: #add item
+        print(cardápio)
         comanda=input("Digite a comanda que deseja adicionar um item: ")
         if comanda in comandas: 
             produto=input("Digite o nome do produto: ")
-            if produto not in comandas[comanda].keys():
-                quantidade=int(input("Digite a quantidade que deseja inserir: "))
-                comandas[comanda].update({produto:quantidade})
+            if produto in cardápio:
+                if produto not in comandas[comanda].keys():
+                    quantidade=int(input("Digite a quantidade que deseja inserir: "))
+                    comandas[comanda].update({produto:quantidade})
+                else:
+                    quantidade=int(input("Digite a quantidade que deseja inserir: "))+comandas[comanda][produto]
+                    comandas[comanda].update({produto:quantidade})
             else:
-                quantidade=int(input("Digite a quantidade que deseja inserir: "))+comandas[comanda][produto]
-                comandas[comanda].update({produto:quantidade})
+                print("Por favor, insira um produto do cardápio")                        
         if comanda not in comandas:
             produto=input("Digite o nome do produto: ")
             quantidade=int(input("Digite a quantidade que deseja inserir: "))
@@ -78,12 +82,14 @@ while True:
 
         print(comandas)
     if a==3:                 #remove item
+        print(cardápio)
         comanda=input("Digite a comanda que deseja remover um item: ")
-        if comanda in comandas: 
-            produto=input("Digite o nome do produto: ")
-            quantidade=abs(int(input("Digite a quantidade que deseja remover: "))-comandas[comanda][produto])
-            comandas[comanda].update({produto:quantidade})
-            print(comandas)
+        if produto in cardápio:
+            if comanda in comandas: 
+                produto=input("Digite o nome do produto: ")
+                quantidade=abs(int(input("Digite a quantidade que deseja remover: "))-comandas[comanda][produto])
+                comandas[comanda].update({produto:quantidade})
+                print(comandas)
     if a==4:
         nomedacomanda=input("Insira qual comanda você deseja imprimir: ")
         print("A comanda {0} contém os seguintens produtos:".format(nomedacomanda))

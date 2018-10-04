@@ -4,9 +4,15 @@ Created on Mon Sep 10 08:54:17 2018
 EP1
 @author: Guilherme Boldin
 """
+from firebase import firebase
+firebasecardápio = firebase.FirebaseApplication('https://ep1-dsoft-aaf53.firebaseio.com/', None)
+#firebasecomandas =
+if firebasecardápio.get("cardápio",None) is None:                
+    cardápio = {}
+else:
+    cardápio= firebasecardápio.get("cardápio",None)
 # definição de cardápio
-cardápio={'jujuba':3, 'cachorro quente':5}
-comanda=[]
+comandas={}
 while True:
     #introdução do programa
     print('\nComanda eletrônica:')
@@ -20,7 +26,8 @@ while True:
         #opção 1: mostra o cardápio e o preço de cada item do cardápio, além de gerenciar o cardápio.
     if a==1:
         print('O cardápio possui os seguintes itens: ')
-        print(cardápio)
+        for chave in cardápio:
+            print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
         escolha=int(input('Você deseja alterar o cardápio?\n1 = Sim\n2 = Não\nSua escolha: '))
         if escolha== 1:
                 escolha2=int(input('Deseja adicionar, remover ou mudar itens do cardápio?\n1 - Adicionar\n2 - Remover\n3 - Mudar\nSua escolha: '))
@@ -28,26 +35,73 @@ while True:
                     adicionaritem=input('Digite o item: ')
                     adicionarpreço=int(input('Digite o preço do produto: '))
                     print("O produto foi adicionado assim como o preço!")
+                    for chave in cardápio:
+                            print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
                     if adicionarpreço<0:
                         print('Por favor, insira um preço válido')
                     cardápio[adicionaritem]=adicionarpreço
+                    for chave in cardápio:
+                            print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
                 if escolha2 == 2:
                     removeritem=input('Digite o item a ser removido: ')
                     if removeritem not in cardápio:
                         print("Por favor, insira um elemento que existe no cardápio")
                     del cardápio[removeritem]
+                    for chave in cardápio:
+                           print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
                 if escolha2 ==3 :
                     nomedoprodutoasermudado=input('Digite o nome do produto a ter o preço mudado:')
                     if nomedoprodutoasermudado in cardápio:
-                        print("Por favor, insira um produto do cardápio")
                         novopreço=int(input('Digite o preço novo: '))
                         cardápio[nomedoprodutoasermudado]=novopreço
-    if a==2:
-        
-        escolha_da_comanda=input("Deseja criar uma comanda ou adicionar itens a uma comanada?\n1 - Criar\n2 - Adicionar\nSua escolha: ")
-        
-        adicionar_a_comanda=input("Digite o nome da comanda a qual deseja adicionar um item: " )
+                        for chave in cardápio:
+                            print('-{0}  (R${1:.2f})'.format(chave,cardápio[chave]))
+                    else:
+                        print("Por favor, insira um produto do cardápio")
+    if a==2:                #add item
+        comanda=input("Digite a comanda que deseja adicionar um item: ")
+        if comanda in comandas: 
+            produto=input("Digite o nome do produto: ")
+            if produto not in comandas[comanda].keys():
+                quantidade=int(input("Digite a quantidade que deseja inserir: "))
+                comandas[comanda].update({produto:quantidade})
+            else:
+                quantidade=int(input("Digite a quantidade que deseja inserir: "))+comandas[comanda][produto]
+                comandas[comanda].update({produto:quantidade})
+        if comanda not in comandas:
+            produto=input("Digite o nome do produto: ")
+            quantidade=int(input("Digite a quantidade que deseja inserir: "))
+            comandas[comanda]={produto:quantidade}
+            if quantidade < 0:
+                print("Por favor, insira uma quantidade maior que zero:")
+
+
+        print(comandas)
+    if a==3:                 #remove item
+        comanda=input("Digite a comanda que deseja remover um item: ")
+        if comanda in comandas: 
+            produto=input("Digite o nome do produto: ")
+            quantidade=abs(int(input("Digite a quantidade que deseja remover: "))-comandas[comanda][produto])
+            comandas[comanda].update({produto:quantidade})
+            print(comandas)
+    if a==4:
+        nomedacomanda=input("Insira qual comanda você deseja imprimir: ")
+        print("A comanda {0} contém os seguintens produtos:".format(nomedacomanda))
+        somatudo=[]
+        for keys in comandas[nomedacomanda]:
+            print('\n- '+keys+': '+str(comandas[nomedacomanda][keys]).format(keys,comandas[nomedacomanda][keys]))
+            print('Preço unitário: R${0:.2f}'.format(cardápio[keys]))
+            print('Preço total: R${0:.2f}'.format(comandas[nomedacomanda][keys]*cardápio[keys]))
+            brisa=comandas[nomedacomanda][keys]*cardápio[keys]
+            somatudo.append(brisa)
+        print('TOTAL: {0:.2f}'.format(sum(somatudo)))
+        dezporcento=((sum(somatudo))*1.1)
+        print('TOTAL (c/10%): {0:.2f}'.format(dezporcento))
+            
     
     if a>4 or a<0:
         print('Por favor, escolha uma opção vállida entre 0 e 4.')
+
+
+#result = firebase.patch('https://ep1-dsoft-aaf53.firebaseio.com/cardápio', cardápio)
         
